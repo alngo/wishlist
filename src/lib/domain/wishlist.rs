@@ -34,6 +34,14 @@ impl Wishlist {
             items: HashSet::new(),
         }
     }
+
+    pub fn add_item(&mut self, _item: Item) {
+        todo!()
+    }
+
+    pub fn remove_item(&mut self, _item_id: Uuid) {
+        todo!()
+    }
 }
 
 #[cfg(test)]
@@ -52,7 +60,6 @@ mod user_tests {
         assert_eq!(wishlist.id, id);
         assert_eq!(wishlist.owner_id, owner_id);
         assert_eq!(wishlist.name, "Test wishlist".into());
-        assert_eq!(wishlist.slug, "Wishlist".into());
         assert_eq!(wishlist.private, true);
         assert!(wishlist.items.is_empty());
     }

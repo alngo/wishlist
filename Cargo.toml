@@ -13,6 +13,8 @@ name = "api"
 path = "src/bin/api.rs"
 
 [dependencies]
+async-trait = "0.1.88"
+mockall = "0.13.1"
 rust_decimal = "1.37.1"
 url = "2.5.4"
-uuid = { version = "1.16.0", features = ["v7", "v8"] }
+uuid = { version = "1.16.0", features = ["v4", "v7", "v8"] }
