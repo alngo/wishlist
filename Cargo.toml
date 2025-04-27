@@ -1,0 +1,18 @@
+[package]
+name = "wishlist"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "wishlist"
+crate-type = ["cdylib"]
+path = "src/lib/lib.rs"
+
+[[bin]]
+name = "api"
+path = "src/bin/api.rs"
+
+[dependencies]
+rust_decimal = "1.37.1"
+url = "2.5.4"
+uuid = { version = "1.16.0", features = ["v7", "v8"] }
