@@ -42,7 +42,7 @@ impl Item {
 }
 
 #[cfg(test)]
-mod user_tests {
+mod tests {
     use uuid::Uuid;
 
     use crate::domain::wishlist::{

@@ -6,7 +6,7 @@ use uuid::Uuid;
 use mockall::automock;
 
 #[cfg_attr(test, automock)]
-#[async_trait]
+#[async_trait(?Send)]
 pub trait WishlistRepository {
     async fn save(&self, wishlist: &Wishlist) -> Result<(), String>;
     async fn find_by_id(&self, id: Uuid) -> Result<Option<Wishlist>, String>;

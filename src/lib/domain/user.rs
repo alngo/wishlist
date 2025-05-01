@@ -1,8 +1,12 @@
 mod email;
 mod password;
+mod repository;
+mod service;
 
 pub use email::UserEmail;
 pub use password::UserPassword;
+pub use repository::*;
+pub use service::*;
 use uuid::Uuid;
 
 pub struct User {
@@ -13,12 +17,12 @@ pub struct User {
 }
 
 impl User {
-    pub fn register(id: Uuid, _email: UserEmail, _password: UserPassword) -> Self {
+    pub fn new(id: Uuid, email: UserEmail, password: UserPassword) -> Self {
         Self {
             id,
-            anonymous: true,
-            email: UserEmail::from(""),
-            password: UserPassword::from(""),
+            anonymous: email.to_string().is_empty(),
+            email,
+            password,
         }
     }
 }
@@ -32,7 +36,7 @@ mod user_tests {
     #[test]
     fn register_anonymous_user() {
         let id = Uuid::now_v7();
-        let user = User::register(id, UserEmail::from(""), UserPassword::from(""));
+        let user = User::new(id, UserEmail::from(""), UserPassword::from(""));
         assert_eq!(user.id, id);
         assert_eq!(user.anonymous, true);
         assert_eq!(user.email, UserEmail::from(""));
