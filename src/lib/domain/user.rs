@@ -9,6 +9,7 @@ pub use repository::*;
 pub use service::*;
 use uuid::Uuid;
 
+#[derive(Debug, Clone)]
 pub struct User {
     id: Uuid,
     anonymous: bool,
