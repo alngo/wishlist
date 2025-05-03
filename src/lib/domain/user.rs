@@ -25,6 +25,18 @@ impl User {
             password,
         }
     }
+
+    pub fn id(&self) -> &Uuid {
+        &self.id
+    }
+
+    pub fn email(&self) -> &UserEmail {
+        &self.email
+    }
+
+    pub fn password(&self) -> &UserPassword {
+        &self.password
+    }
 }
 
 #[cfg(test)]
@@ -34,7 +46,7 @@ mod user_tests {
     use super::{User, UserEmail, UserPassword};
 
     #[test]
-    fn register_anonymous_user() {
+    fn new_user() {
         let id = Uuid::now_v7();
         let user = User::new(id, UserEmail::from(""), UserPassword::from(""));
         assert_eq!(user.id, id);

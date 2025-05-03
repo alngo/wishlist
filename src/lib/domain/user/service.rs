@@ -13,9 +13,24 @@ pub trait UserService {
     async fn create_user(&self, req: &CreateUserRequest) -> Result<User, CreateUserError>;
 }
 
+#[derive(Debug, Clone)]
 pub struct CreateUserRequest {
     email: UserEmail,
     password: UserPassword,
+}
+
+impl CreateUserRequest {
+    pub fn new(email: UserEmail, password: UserPassword) -> Self {
+        Self { email, password }
+    }
+
+    pub fn email(&self) -> &UserEmail {
+        &self.email
+    }
+
+    pub fn password(&self) -> &UserPassword {
+        &self.password
+    }
 }
 
 #[derive(Debug, Error)]

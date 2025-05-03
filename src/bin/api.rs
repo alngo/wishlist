@@ -1,1 +1,3 @@
-// API
+pub fn main() {
+    println!("Hello, world!");
+}
