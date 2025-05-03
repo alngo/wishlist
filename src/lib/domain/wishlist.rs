@@ -7,6 +7,7 @@ mod slug;
 pub use item::Item;
 pub use name::WishlistName;
 pub use repository::*;
+pub use service::*;
 pub use slug::WishlistSlug;
 use std::collections::HashSet;
 use uuid::Uuid;

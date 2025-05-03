@@ -1,6 +1,9 @@
 use std::{collections::HashMap, sync::Mutex};
 
-use crate::domain::{CreateUserError, CreateUserRequest, FindUserByEmailError, FindUserByEmailRequest, FindUserByIdError, FindUserByIdRequest, User, UserRepository};
+use crate::domain::{
+    CreateUserError, CreateUserRequest, FindUserByEmailError, FindUserByEmailRequest,
+    FindUserByIdError, FindUserByIdRequest, User, UserRepository,
+};
 use async_trait::async_trait;
 use uuid::Uuid;
 
