@@ -1,2 +1,2 @@
-mod user;
-mod wishlist;
+pub mod user;
+pub mod wishlist;

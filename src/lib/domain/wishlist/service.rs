@@ -2,15 +2,11 @@ use async_trait::async_trait;
 use thiserror::Error;
 use uuid::Uuid;
 
-#[cfg(test)]
-use mockall::automock;
-
 use super::{Wishlist, WishlistName};
 
 /// The [WishlistService] trait defines the contract for wishlist-related operations.
-#[cfg_attr(test, automock)]
 #[async_trait(?Send)]
-pub trait WishlistService {
+pub trait WishlistService: Clone + Send + Sync + 'static {
     /// Creates a new wishlist with the provided request.
     ///
     /// # Arguments

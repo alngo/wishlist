@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 
 use crate::domain::{
@@ -5,21 +7,34 @@ use crate::domain::{
     WishlistRepository,
 };
 
-pub struct Service<'u, 'w, U, W>
+pub struct Service<U, W>
 where
     U: UserRepository,
     W: WishlistRepository,
 {
-    user_repository: &'u U,
-    wish_repository: &'w W,
+    user_repository: Arc<U>,
+    wish_repository: Arc<W>,
 }
 
-impl<'u, 'w, U, W> Service<'u, 'w, U, W>
+impl<U, W> Clone for Service<U, W>
 where
     U: UserRepository,
     W: WishlistRepository,
 {
-    pub fn new(user_repository: &'u U, wish_repository: &'w W) -> Self {
+    fn clone(&self) -> Self {
+        Self {
+            user_repository: self.user_repository.clone(),
+            wish_repository: self.wish_repository.clone(),
+        }
+    }
+}
+
+impl<U, W> Service<U, W>
+where
+    U: UserRepository,
+    W: WishlistRepository,
+{
+    pub fn new(user_repository: Arc<U>, wish_repository: Arc<W>) -> Self {
         Self {
             user_repository,
             wish_repository,
@@ -28,10 +43,10 @@ where
 }
 
 #[async_trait(?Send)]
-impl<'u, 'w, U, W> crate::domain::WishlistService for Service<'u, 'w, U, W>
+impl<U, W> crate::domain::WishlistService for Service<U, W>
 where
-    U: UserRepository,
-    W: WishlistRepository,
+    U: UserRepository + Send + Sync + 'static,
+    W: WishlistRepository + Send + Sync + 'static,
 {
     async fn create_wishlist(
         &self,
@@ -72,9 +87,7 @@ mod tests {
         wish_mock_repo
             .expect_save()
             .returning(move |_| Ok(Wishlist::new(id, id, "".into(), "".into(), true)));
-
-        let wish_service = Service::new(&user_mock_repo, &wish_mock_repo);
-
+        let wish_service = Service::new(Arc::new(user_mock_repo), Arc::new(wish_mock_repo));
         let result = wish_service.create_wishlist(&req).await;
         assert!(result.is_ok());
     }

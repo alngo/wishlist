@@ -1,15 +1,12 @@
 use async_trait::async_trait;
-#[cfg(test)]
-use mockall::automock;
 use thiserror::Error;
 use uuid::Uuid;
 
 use super::{User, UserEmail, UserPassword};
 
 /// The [UserService] trait defines the contract for user-related operations.
-#[cfg_attr(test, automock)]
 #[async_trait(?Send)]
-pub trait UserService {
+pub trait UserService: Clone + Send + Sync + 'static {
     /// Creates a new user with the provided request.
     ///
     /// # Arguments

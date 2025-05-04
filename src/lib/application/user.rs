@@ -1,27 +1,40 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 
 use crate::domain::{CreateUserError, CreateUserRequest, User, UserRepository, UserService};
 
-pub struct Service<'u, U>
+pub struct Service<U>
 where
     U: UserRepository,
 {
-    user_repository: &'u U,
+    user_repository: Arc<U>,
 }
 
-impl<'u, U> Service<'u, U>
+impl<U> Clone for Service<U>
 where
     U: UserRepository,
 {
-    pub fn new(user_repository: &'u U) -> Self {
+    fn clone(&self) -> Self {
+        Self {
+            user_repository: self.user_repository.clone(),
+        }
+    }
+}
+
+impl<U> Service<U>
+where
+    U: UserRepository,
+{
+    pub fn new(user_repository: Arc<U>) -> Self {
         Self { user_repository }
     }
 }
 
 #[async_trait(?Send)]
-impl<'u, U> UserService for Service<'u, U>
+impl<U> UserService for Service<U>
 where
-    U: UserRepository,
+    U: UserRepository + Send + Sync + 'static,
 {
     async fn create_user(&self, req: &CreateUserRequest) -> Result<User, CreateUserError> {
         if req.email().to_string().is_empty() {
@@ -49,7 +62,7 @@ mod tests {
         mock_repo
             .expect_save()
             .returning(move |_| Ok(User::new(id, "".into(), "".into())));
-        let user_service = Service::new(&mock_repo);
+        let user_service = Service::new(Arc::new(mock_repo));
 
         let result = user_service.create_user(&req).await;
         assert!(result.is_ok());

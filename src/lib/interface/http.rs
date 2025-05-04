@@ -1,7 +1,11 @@
+use std::sync::Arc;
+
 use anyhow::Context;
 use tokio::net;
 
 use axum::routing::get;
+
+use crate::domain::{UserService, WishlistService};
 
 pub struct HttpServerConfig {
     pub host: String,
@@ -19,8 +23,17 @@ pub struct HttpServer {
     listener: net::TcpListener,
 }
 
+#[derive(Debug, Clone)]
+struct AppState<US: UserService> {
+    user_service: Arc<US>,
+}
+
 impl HttpServer {
-    pub async fn new(config: HttpServerConfig) -> anyhow::Result<Self> {
+    pub async fn new(
+        user_service: impl UserService,
+        wishlist_service: impl WishlistService,
+        config: HttpServerConfig,
+    ) -> anyhow::Result<Self> {
         let trace_layer = tower_http::trace::TraceLayer::new_for_http().make_span_with(
             |request: &axum::extract::Request<_>| {
                 let uri = request.uri().to_string();
@@ -28,10 +41,15 @@ impl HttpServer {
             },
         );
 
+        let app_state = AppState {
+            user_service: Arc::new(user_service),
+        };
+
         let router = axum::Router::new()
             .route("/health_check", get(|| async { "OK" }))
             // .nest("/api", api_routes())
-            .layer(trace_layer);
+            .layer(trace_layer)
+            .with_state(app_state);
 
         let listener = net::TcpListener::bind((config.host.as_str(), config.port))
             .await
@@ -49,6 +67,49 @@ impl HttpServer {
     }
 }
 
-// fn api_routes<BS: BlogService>() -> Router<AppState<BS>> {
-//     Router::new().route("/authors", post(create_author::<BS>))
-// }
+#[cfg(test)]
+mod tests {
+    use crate::{
+        application::{user, wishlist as wish},
+        domain::{MockUserRepository, MockWishlistRepository},
+    };
+
+    use super::*;
+    use std::net::{SocketAddr, TcpListener};
+
+    async fn spawn_app() -> String {
+        let local_addr = TcpListener::bind("127.0.0.1:0")
+            .expect("Failed to bind a random port")
+            .local_addr()
+            .unwrap();
+        let address = SocketAddr::new(local_addr.ip(), local_addr.port());
+        let server_config = HttpServerConfig {
+            port: local_addr.port(),
+            host: local_addr.ip().to_string(),
+        };
+        let user_repo = Arc::new(MockUserRepository::new());
+        let wish_repo = Arc::new(MockWishlistRepository::new());
+        let user_service = user::Service::new(user_repo.clone());
+        let wish_service = wish::Service::new(user_repo.clone(), wish_repo.clone());
+        let http_server = HttpServer::new(user_service, wish_service, server_config)
+            .await
+            .expect("Failed to create HttpServer");
+        tokio::spawn(http_server.run());
+        format!("http://{}", address)
+    }
+
+    #[tokio::test]
+    async fn test_health_check() {
+        let address = spawn_app().await;
+        let client = reqwest::Client::new();
+
+        let response = client
+            .get(&format!("{}/health_check", &address))
+            .send()
+            .await
+            .expect("Failed to execute request.");
+
+        assert!(response.status().is_success());
+        assert_eq!(Some(2), response.content_length());
+    }
+}
