@@ -1,16 +1,15 @@
-use crate::domain::User;
-
 use async_trait::async_trait;
 #[cfg(test)]
 use mockall::automock;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::{UserEmail, UserPassword};
+use super::{
+    User,
+    UserEmail, UserPassword
+};
 
-/// `UserService` trait defines the contract for user-related operations.
-///
-/// It provides a method to create a new user.
+/// The [UserService] trait defines the contract for user-related operations.
 #[cfg_attr(test, automock)]
 #[async_trait(?Send)]
 pub trait UserService {

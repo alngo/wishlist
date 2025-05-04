@@ -1,10 +1,14 @@
-use crate::domain::{CreateUserError, CreateUserRequest, User};
 use async_trait::async_trait;
 
 #[cfg(test)]
 use mockall::automock;
 
-use super::{FindUserByEmailError, FindUserByEmailRequest, FindUserByIdError, FindUserByIdRequest};
+use super::{
+    User,
+    CreateUserRequest, CreateUserError,
+    FindUserByEmailError, FindUserByEmailRequest,
+    FindUserByIdError, FindUserByIdRequest
+};
 
 /// The [UserRepository] trait defines the contract for user-related data operations.
 #[cfg_attr(test, automock)]
@@ -37,7 +41,6 @@ pub trait UserRepository {
         &self,
         req: &FindUserByEmailRequest,
     ) -> Result<Option<User>, FindUserByEmailError>;
-
     /// Finds a user by their ID.
     ///
     /// # Arguments

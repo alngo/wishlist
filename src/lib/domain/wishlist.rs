@@ -4,7 +4,7 @@ mod repository;
 mod service;
 mod slug;
 
-pub use item::Item;
+pub use item::*;
 pub use name::WishlistName;
 pub use repository::*;
 pub use service::*;
@@ -18,7 +18,7 @@ pub struct Wishlist {
     name: WishlistName,
     slug: WishlistSlug,
     private: bool,
-    items: HashSet<Item>,
+    items: HashSet<Uuid>,
 }
 
 impl Wishlist {
