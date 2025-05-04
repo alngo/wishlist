@@ -1,0 +1,7 @@
+[database]
+url = "postgresql://username:password@localhost:5432/waishlist_db"
+max_connections = 5
+
+[server]
+host = "127.0.0.1"
+port = 3000 

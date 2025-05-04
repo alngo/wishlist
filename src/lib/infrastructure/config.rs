@@ -1,28 +1,40 @@
+use config::{Config as ConfigSource, ConfigError, Environment, File};
+use serde::Deserialize;
 use std::env;
 
-use anyhow::Context;
+#[derive(Debug, Deserialize)]
+pub struct DatabaseConfig {
+    pub url: String,
+    pub max_connections: u32,
+}
 
-const DATABASE_URL_KEY: &str = "DATABASE_URL";
-const SERVER_PORT_KEY: &str = "SERVER_PORT";
+#[derive(Debug, Deserialize)]
+pub struct ServerConfig {
+    pub host: String,
+    pub port: u16,
+}
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize)]
 pub struct Config {
-    pub server_port: String,
-    pub database_url: String,
+    pub database: DatabaseConfig,
+    pub server: ServerConfig,
 }
 
 impl Config {
-    pub fn from_env() -> anyhow::Result<Config> {
-        let server_port = load_env(SERVER_PORT_KEY)?;
-        let database_url = load_env(DATABASE_URL_KEY)?;
+    pub fn load() -> Result<Self, ConfigError> {
+        let run_mode = env::var("RUN_MODE").unwrap_or_else(|_| "development".into());
 
-        Ok(Config {
-            server_port,
-            database_url,
-        })
+        let config = ConfigSource::builder()
+            // Start with default settings
+            .add_source(File::with_name("config/default"))
+            // Add environment-specific settings
+            .add_source(File::with_name(&format!("config/{}", run_mode)).required(false))
+            // Add local settings (git-ignored)
+            .add_source(File::with_name("config/local").required(false))
+            // Add environment variables with prefix "APP_"
+            .add_source(Environment::with_prefix("APP").separator("__"))
+            .build()?;
+
+        config.try_deserialize()
     }
-}
-
-fn load_env(key: &str) -> anyhow::Result<String> {
-    env::var(key).with_context(|| format!("failed to load environment variable {}", key))
 }
