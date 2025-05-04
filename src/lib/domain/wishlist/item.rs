@@ -1,16 +1,16 @@
 mod image_url;
 mod link_url;
 mod price;
-mod title;
-mod service;
 mod repository;
+mod service;
+mod title;
 
 pub use image_url::ItemImageUrl;
 pub use link_url::ItemLinkUrl;
 pub use price::ItemPrice;
-pub use title::ItemTitle;
-pub use service::*;
 pub use repository::*;
+pub use service::*;
+pub use title::ItemTitle;
 use uuid::Uuid;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

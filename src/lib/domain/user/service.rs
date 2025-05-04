@@ -4,10 +4,7 @@ use mockall::automock;
 use thiserror::Error;
 use uuid::Uuid;
 
-use super::{
-    User,
-    UserEmail, UserPassword
-};
+use super::{User, UserEmail, UserPassword};
 
 /// The [UserService] trait defines the contract for user-related operations.
 #[cfg_attr(test, automock)]

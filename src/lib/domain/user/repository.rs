@@ -4,10 +4,8 @@ use async_trait::async_trait;
 use mockall::automock;
 
 use super::{
-    User,
-    CreateUserRequest, CreateUserError,
-    FindUserByEmailError, FindUserByEmailRequest,
-    FindUserByIdError, FindUserByIdRequest
+    CreateUserError, CreateUserRequest, FindUserByEmailError, FindUserByEmailRequest,
+    FindUserByIdError, FindUserByIdRequest, User,
 };
 
 /// The [UserRepository] trait defines the contract for user-related data operations.

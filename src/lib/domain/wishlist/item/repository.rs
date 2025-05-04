@@ -3,11 +3,7 @@ use async_trait::async_trait;
 #[cfg(test)]
 use mockall::automock;
 
-use super::{
-    Item,
-    CreateItemRequest, CreateItemError,
-    FindItemByIdRequest, FindItemByIdError,
-};
+use super::{CreateItemError, CreateItemRequest, FindItemByIdError, FindItemByIdRequest, Item};
 
 /// The [ItemRepoisitory] trait defines the contract for item-related data operations.
 #[cfg_attr(test, automock)]
@@ -36,5 +32,8 @@ pub trait ItemRepository {
     ///
     /// # Errors
     /// - [FindItemByIdError::Unkown] for any other errors that may occur during the search.
-    async fn find_item_by_id(&self, req: &FindItemByIdRequest) -> Result<Option<Item>, FindItemByIdError>;
+    async fn find_item_by_id(
+        &self,
+        req: &FindItemByIdRequest,
+    ) -> Result<Option<Item>, FindItemByIdError>;
 }

@@ -40,7 +40,7 @@ impl CreateItemRequest {
         title: ItemTitle,
         link_url: ItemLinkUrl,
         image_url: ItemImageUrl,
-        price: ItemPrice
+        price: ItemPrice,
     ) -> Self {
         Self {
             title,
@@ -74,7 +74,6 @@ pub enum CreateItemError {
     #[error(transparent)]
     Unkown(#[from] anyhow::Error),
 }
-
 
 /// The [FindItemByIdRequest] struct represents a request to find an item by their ID.
 #[derive(Debug, Clone)]
