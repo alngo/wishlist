@@ -3,8 +3,8 @@ mod password;
 mod repository;
 mod service;
 
-pub use email::UserEmail;
-pub use password::UserPassword;
+pub use email::*;
+pub use password::*;
 pub use repository::*;
 pub use service::*;
 use uuid::Uuid;

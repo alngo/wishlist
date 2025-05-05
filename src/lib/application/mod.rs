@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 
 use crate::domain::{
@@ -17,14 +19,13 @@ pub trait UseCases: Clone + Send + Sync + 'static {
     ) -> Result<Wishlist, CreateWishlistError>;
 }
 
-#[derive(Clone)]
 pub struct Service<U, W>
 where
     U: UserService,
     W: WishlistService,
 {
-    user_service: U,
-    wish_service: W,
+    user_service: Arc<U>,
+    wish_service: Arc<W>,
 }
 
 impl<U, W> Service<U, W>
@@ -34,8 +35,21 @@ where
 {
     pub fn new(user_service: U, wish_service: W) -> Self {
         Self {
-            user_service,
-            wish_service,
+            user_service: Arc::new(user_service),
+            wish_service: Arc::new(wish_service),
+        }
+    }
+}
+
+impl<U, W> Clone for Service<U, W>
+where
+    U: UserService,
+    W: WishlistService,
+{
+    fn clone(&self) -> Self {
+        Self {
+            user_service: self.user_service.clone(),
+            wish_service: self.wish_service.clone(),
         }
     }
 }

@@ -1,11 +1,15 @@
-use std::sync::Arc;
-
-use anyhow::Context;
-use tokio::net;
-
-use axum::routing::get;
+mod handlers;
+mod responses;
 
 use crate::application::UseCases;
+use anyhow::Context;
+use axum::{
+    handler::Handler,
+    routing::{get, post},
+};
+use handlers::create_user::create_user;
+use std::sync::Arc;
+use tokio::net;
 
 pub struct HttpServerConfig {
     pub host: String,
@@ -24,8 +28,8 @@ pub struct HttpServer {
 }
 
 #[derive(Debug, Clone)]
-struct AppState<S: UseCases> {
-    services: Arc<S>,
+struct AppState<UC: UseCases> {
+    services: Arc<UC>,
 }
 
 impl HttpServer {
@@ -42,9 +46,8 @@ impl HttpServer {
         };
 
         let router = axum::Router::new()
-            .route("/health_check", get(|| async { "OK" }))
-            // .nest("/api", api_routes())
             .layer(trace_layer)
+            .route("/health_check", get(|| async { "OK" }))
             .with_state(app_state);
 
         let listener = net::TcpListener::bind((config.host.as_str(), config.port))
@@ -66,8 +69,8 @@ impl HttpServer {
 #[cfg(test)]
 mod tests {
     use crate::{
-        application::{user, wishlist as wish, Service},
-        domain::{MockUserRepository, MockWishlistRepository},
+        application::Service,
+        domain::{MockUserService, MockWishlistService},
     };
 
     use super::*;
@@ -83,10 +86,8 @@ mod tests {
             port: local_addr.port(),
             host: local_addr.ip().to_string(),
         };
-        let user_repo = Arc::new(MockUserRepository::new());
-        let wish_repo = Arc::new(MockWishlistRepository::new());
-        let user_service = user::Service::new(user_repo.clone());
-        let wish_service = wish::Service::new(user_repo.clone(), wish_repo.clone());
+        let user_service = MockUserService::new();
+        let wish_service = MockWishlistService::new();
         let services = Service::new(user_service, wish_service);
         let http_server = HttpServer::new(services, server_config)
             .await

@@ -2,11 +2,15 @@ use async_trait::async_trait;
 use thiserror::Error;
 use uuid::Uuid;
 
+#[cfg(test)]
+use mockall::automock;
+
 use super::{User, UserEmail, UserPassword};
 
 /// The [UserService] trait defines the contract for user-related operations.
+#[cfg_attr(test, automock)]
 #[async_trait(?Send)]
-pub trait UserService: Clone + Send + Sync + 'static {
+pub trait UserService: Send + Sync + 'static {
     /// Creates a new user with the provided request.
     ///
     /// # Arguments
@@ -47,7 +51,7 @@ pub enum CreateUserError {
     #[error("User with email {email} already exist")]
     Duplicate { email: UserEmail },
     #[error(transparent)]
-    Unkown(#[from] anyhow::Error),
+    Unknown(#[from] anyhow::Error),
 }
 
 /// The [FindUserByEmailRequest] struct represents a request to find a user by their email address.

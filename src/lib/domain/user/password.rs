@@ -1,7 +1,15 @@
 use std::fmt::Display;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+use thiserror::Error;
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct UserPassword(String);
+
+impl UserPassword {
+    pub fn new(password: &str) -> Result<Self, UserPasswordInvalidError> {
+        Ok(UserPassword(password.to_string()))
+    }
+}
 
 impl From<&str> for UserPassword {
     fn from(value: &str) -> Self {
@@ -14,3 +22,7 @@ impl Display for UserPassword {
         write!(f, "****************")
     }
 }
+
+#[derive(Clone, Debug, Error)]
+#[error("Password is invalid")]
+pub struct UserPasswordInvalidError;
