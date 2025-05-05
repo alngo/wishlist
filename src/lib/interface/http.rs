@@ -5,7 +5,7 @@ use tokio::net;
 
 use axum::routing::get;
 
-use crate::domain::{UserService, WishlistService};
+use crate::application::UseCases;
 
 pub struct HttpServerConfig {
     pub host: String,
@@ -24,16 +24,12 @@ pub struct HttpServer {
 }
 
 #[derive(Debug, Clone)]
-struct AppState<US: UserService> {
-    user_service: Arc<US>,
+struct AppState<S: UseCases> {
+    services: Arc<S>,
 }
 
 impl HttpServer {
-    pub async fn new(
-        user_service: impl UserService,
-        wishlist_service: impl WishlistService,
-        config: HttpServerConfig,
-    ) -> anyhow::Result<Self> {
+    pub async fn new(services: impl UseCases, config: HttpServerConfig) -> anyhow::Result<Self> {
         let trace_layer = tower_http::trace::TraceLayer::new_for_http().make_span_with(
             |request: &axum::extract::Request<_>| {
                 let uri = request.uri().to_string();
@@ -42,7 +38,7 @@ impl HttpServer {
         );
 
         let app_state = AppState {
-            user_service: Arc::new(user_service),
+            services: Arc::new(services),
         };
 
         let router = axum::Router::new()
@@ -70,7 +66,7 @@ impl HttpServer {
 #[cfg(test)]
 mod tests {
     use crate::{
-        application::{user, wishlist as wish},
+        application::{user, wishlist as wish, Service},
         domain::{MockUserRepository, MockWishlistRepository},
     };
 
@@ -91,7 +87,8 @@ mod tests {
         let wish_repo = Arc::new(MockWishlistRepository::new());
         let user_service = user::Service::new(user_repo.clone());
         let wish_service = wish::Service::new(user_repo.clone(), wish_repo.clone());
-        let http_server = HttpServer::new(user_service, wish_service, server_config)
+        let services = Service::new(user_service, wish_service);
+        let http_server = HttpServer::new(services, server_config)
             .await
             .expect("Failed to create HttpServer");
         tokio::spawn(http_server.run());

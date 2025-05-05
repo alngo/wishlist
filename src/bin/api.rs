@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use wishlist::{
-    application::{user, wishlist as wish},
+    application::{user, wishlist as wish, Service},
     infrastructure::{
         config::Config,
         logging,
@@ -28,11 +28,13 @@ async fn main() -> anyhow::Result<()> {
     let wish_repo = Arc::new(InMemoryWishlistRepository::new());
     let wish_service = wish::Service::new(user_repo.clone(), wish_repo.clone());
 
+    let services = Service::new(user_service, wish_service);
+
     // Initialize the HTTP server
     let server_config = HttpServerConfig {
         port: config.server.port,
         host: config.server.host,
     };
-    let http_server = HttpServer::new(user_service, wish_service, server_config).await?;
+    let http_server = HttpServer::new(services, server_config).await?;
     http_server.run().await
 }

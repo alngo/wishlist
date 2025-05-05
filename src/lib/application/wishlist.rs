@@ -4,7 +4,7 @@ use async_trait::async_trait;
 
 use crate::domain::{
     CreateWishlistError, CreateWishlistRequest, FindUserByIdRequest, UserRepository, Wishlist,
-    WishlistRepository,
+    WishlistRepository, WishlistService,
 };
 
 pub struct Service<U, W>
@@ -43,7 +43,7 @@ where
 }
 
 #[async_trait(?Send)]
-impl<U, W> crate::domain::WishlistService for Service<U, W>
+impl<U, W> WishlistService for Service<U, W>
 where
     U: UserRepository + Send + Sync + 'static,
     W: WishlistRepository + Send + Sync + 'static,
