@@ -1,7 +1,5 @@
 use std::sync::Arc;
 
-use async_trait::async_trait;
-
 use crate::domain::{
     CreateWishlistError, CreateWishlistRequest, FindUserByIdRequest, UserRepository, Wishlist,
     WishlistRepository, WishlistService,
@@ -42,7 +40,6 @@ where
     }
 }
 
-#[async_trait(?Send)]
 impl<U, W> WishlistService for Service<U, W>
 where
     U: UserRepository + Send + Sync + 'static,
@@ -70,6 +67,8 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::future;
+
     use uuid::Uuid;
 
     use super::*;
@@ -80,13 +79,19 @@ mod tests {
         let id = Uuid::now_v7();
         let req = CreateWishlistRequest::new(id, "".into(), true);
         let mut user_mock_repo = MockUserRepository::new();
-        user_mock_repo
-            .expect_find_user_by_id()
-            .returning(move |_| Ok(Some(User::new(id, "".into(), "".into()))));
+        user_mock_repo.expect_find_user_by_id().returning(move |_| {
+            Box::pin(future::ready(Ok(Some(User::new(id, "".into(), "".into())))))
+        });
         let mut wish_mock_repo = MockWishlistRepository::new();
-        wish_mock_repo
-            .expect_save()
-            .returning(move |_| Ok(Wishlist::new(id, id, "".into(), "".into(), true)));
+        wish_mock_repo.expect_save().returning(move |_| {
+            Box::pin(future::ready(Ok(Wishlist::new(
+                id,
+                id,
+                "".into(),
+                "".into(),
+                true,
+            ))))
+        });
         let wish_service = Service::new(Arc::new(user_mock_repo), Arc::new(wish_mock_repo));
         let result = wish_service.create_wishlist(&req).await;
         assert!(result.is_ok());

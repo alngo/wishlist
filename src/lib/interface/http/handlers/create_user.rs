@@ -200,7 +200,7 @@ pub async fn create_user<UC: UseCases>(
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
+    use std::{future, sync::Arc};
 
     use uuid::Uuid;
 
@@ -222,7 +222,7 @@ mod tests {
             .expect_create_user()
             .return_once(move |req| {
                 let user = User::new(id, req.email().clone(), req.password().clone());
-                Ok(user)
+                Box::pin(future::ready(Ok(user)))
             });
         let mock_wish_service = MockWishlistService::new();
         let service = Service::new(mock_user_service, mock_wish_service);

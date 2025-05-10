@@ -1,4 +1,5 @@
-use async_trait::async_trait;
+use std::future::Future;
+
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -9,7 +10,7 @@ use super::{User, UserEmail, UserPassword};
 
 /// The [UserService] trait defines the contract for user-related operations.
 #[cfg_attr(test, automock)]
-#[async_trait(?Send)]
+#[allow(refining_impl_trait)]
 pub trait UserService: Send + Sync + 'static {
     /// Creates a new user with the provided request.
     ///
@@ -22,7 +23,10 @@ pub trait UserService: Send + Sync + 'static {
     /// # Errors
     /// - [CreateUserError::Duplicate] if a user with the same email already exists.
     /// - [CreateUserError::Unkown] for any other errors that may occur during user creation.
-    async fn create_user(&self, req: &CreateUserRequest) -> Result<User, CreateUserError>;
+    fn create_user(
+        &self,
+        req: &CreateUserRequest,
+    ) -> impl Future<Output = Result<User, CreateUserError>>;
 }
 
 /// The [CreateUserRequest] struct represents a request to create a new [User].

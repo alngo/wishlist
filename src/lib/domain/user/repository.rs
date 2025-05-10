@@ -1,4 +1,4 @@
-use async_trait::async_trait;
+use std::future::Future;
 
 #[cfg(test)]
 use mockall::automock;
@@ -10,7 +10,7 @@ use super::{
 
 /// The [UserRepository] trait defines the contract for user-related data operations.
 #[cfg_attr(test, automock)]
-#[async_trait]
+#[allow(refining_impl_trait)]
 pub trait UserRepository {
     /// Saves a new user to the repository.
     ///
@@ -23,7 +23,7 @@ pub trait UserRepository {
     /// # Errors
     /// - [CreateUserError::Duplicate] if a user with the same email already exists.
     /// - [CreateUserError::Unkown] for any other errors that may occur during user creation.
-    async fn save(&self, req: &CreateUserRequest) -> Result<User, CreateUserError>;
+    fn save(&self, req: &CreateUserRequest) -> impl Future<Output = Result<User, CreateUserError>>;
     /// Finds a user by their email address.
     ///
     /// # Arguments
@@ -35,10 +35,10 @@ pub trait UserRepository {
     ///
     /// # Errors
     /// - [FindUserByEmailError::Unkown] for any other errors that may occur during the search.
-    async fn find_user_by_email(
+    fn find_user_by_email(
         &self,
         req: &FindUserByEmailRequest,
-    ) -> Result<Option<User>, FindUserByEmailError>;
+    ) -> impl Future<Output = Result<Option<User>, FindUserByEmailError>>;
     /// Finds a user by their ID.
     ///
     /// # Arguments
@@ -50,8 +50,8 @@ pub trait UserRepository {
     ///
     /// # Errors
     /// - [FindUserByIdError::Unkown] for any other errors that may occur during the search.
-    async fn find_user_by_id(
+    fn find_user_by_id(
         &self,
         id: &FindUserByIdRequest,
-    ) -> Result<Option<User>, FindUserByIdError>;
+    ) -> impl Future<Output = Result<Option<User>, FindUserByIdError>>;
 }

@@ -14,7 +14,6 @@ path = "src/bin/api.rs"
 
 [dependencies]
 anyhow = "1.0.98"
-async-trait = "0.1.88"
 axum = "0.8.4"
 config = "0.15.11"
 dotenv = "0.15.0"

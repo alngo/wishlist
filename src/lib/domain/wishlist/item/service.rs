@@ -1,4 +1,4 @@
-use async_trait::async_trait;
+use std::future::Future;
 
 #[cfg(test)]
 use mockall::automock;
@@ -9,7 +9,7 @@ use super::{Item, ItemImageUrl, ItemLinkUrl, ItemPrice, ItemTitle};
 
 /// The [ItemService] trait defines the contract for item-related operations.
 #[cfg_attr(test, automock)]
-#[async_trait(?Send)]
+#[allow(refining_impl_trait)]
 pub trait ItemService {
     /// Creates a new item with the provided request.
     ///
@@ -23,7 +23,10 @@ pub trait ItemService {
     /// # Errors
     /// - [CreateItemError::Duplicate] if an item with the same URL already exists.
     /// - [CreateItemError::Unkown] for any other errors that may occur during item creation.
-    async fn create_item(&self, req: &CreateItemRequest) -> Result<Item, CreateItemError>;
+    fn create_item(
+        &self,
+        req: &CreateItemRequest,
+    ) -> impl Future<Output = Result<Item, CreateItemError>>;
 }
 
 /// The [CreateItemRequest] struct represents a request to create a new [Item].

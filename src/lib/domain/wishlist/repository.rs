@@ -1,12 +1,13 @@
+use std::future::Future;
+
 use crate::domain::wishlist::{CreateWishlistError, CreateWishlistRequest, Wishlist};
-use async_trait::async_trait;
 
 #[cfg(test)]
 use mockall::automock;
 
 /// The [WishlistRepository] trait defines the contract for wishlist-related data operations.
 #[cfg_attr(test, automock)]
-#[async_trait(?Send)]
+#[allow(refining_impl_trait)]
 pub trait WishlistRepository {
     /// Saves a new wishlist to the repository.
     ///
@@ -19,5 +20,8 @@ pub trait WishlistRepository {
     /// # Errors
     /// - [CreateWishlistError::OwnerIdDoesNotExist] if the owner ID does not exist.
     /// - [CreateWishlistError::Unkown] for any other errors that may occur during wishlist creation.
-    async fn save(&self, req: &CreateWishlistRequest) -> Result<Wishlist, CreateWishlistError>;
+    fn save(
+        &self,
+        req: &CreateWishlistRequest,
+    ) -> impl Future<Output = Result<Wishlist, CreateWishlistError>>;
 }

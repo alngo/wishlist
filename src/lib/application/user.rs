@@ -1,7 +1,5 @@
 use std::sync::Arc;
 
-use async_trait::async_trait;
-
 use crate::domain::{CreateUserError, CreateUserRequest, User, UserRepository, UserService};
 
 pub struct Service<U>
@@ -31,7 +29,6 @@ where
     }
 }
 
-#[async_trait(?Send)]
 impl<U> UserService for Service<U>
 where
     U: UserRepository + Send + Sync + 'static,
@@ -49,6 +46,8 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::future;
+
     use uuid::Uuid;
 
     use super::*;
@@ -61,7 +60,7 @@ mod tests {
         let mut mock_repo = MockUserRepository::new();
         mock_repo
             .expect_save()
-            .returning(move |_| Ok(User::new(id, "".into(), "".into())));
+            .returning(move |_| Box::pin(future::ready(Ok(User::new(id, "".into(), "".into())))));
         let user_service = Service::new(Arc::new(mock_repo));
 
         let result = user_service.create_user(&req).await;

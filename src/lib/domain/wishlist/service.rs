@@ -1,4 +1,5 @@
-use async_trait::async_trait;
+use std::future::Future;
+
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -9,7 +10,7 @@ use super::{Wishlist, WishlistName};
 
 /// The [WishlistService] trait defines the contract for wishlist-related operations.
 #[cfg_attr(test, automock)]
-#[async_trait(?Send)]
+#[allow(refining_impl_trait)]
 pub trait WishlistService: Send + Sync + 'static {
     /// Creates a new wishlist with the provided request.
     ///
@@ -23,10 +24,10 @@ pub trait WishlistService: Send + Sync + 'static {
     /// - [CreateWishlistError::OwnerIdDoesNotExist] if the owner ID does not exist.
     /// - [CreateWishlistError::Unkown] for any other errors that may occur during wishlist
     /// creation.
-    async fn create_wishlist(
+    fn create_wishlist(
         &self,
         req: &CreateWishlistRequest,
-    ) -> Result<Wishlist, CreateWishlistError>;
+    ) -> impl Future<Output = Result<Wishlist, CreateWishlistError>>;
 }
 
 pub struct CreateWishlistRequest {

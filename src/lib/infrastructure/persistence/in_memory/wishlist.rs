@@ -1,6 +1,5 @@
 use std::{collections::HashMap, sync::Mutex};
 
-use async_trait::async_trait;
 use uuid::Uuid;
 
 use crate::domain::{CreateWishlistError, CreateWishlistRequest, Wishlist, WishlistRepository};
@@ -17,7 +16,6 @@ impl InMemoryWishlistRepository {
     }
 }
 
-#[async_trait(?Send)]
 impl WishlistRepository for InMemoryWishlistRepository {
     async fn save(&self, _req: &CreateWishlistRequest) -> Result<Wishlist, CreateWishlistError> {
         todo!()

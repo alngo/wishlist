@@ -1,4 +1,4 @@
-use async_trait::async_trait;
+use std::future::Future;
 
 #[cfg(test)]
 use mockall::automock;
@@ -7,7 +7,7 @@ use super::{CreateItemError, CreateItemRequest, FindItemByIdError, FindItemByIdR
 
 /// The [ItemRepoisitory] trait defines the contract for item-related data operations.
 #[cfg_attr(test, automock)]
-#[async_trait]
+#[allow(refining_impl_trait)]
 pub trait ItemRepository {
     /// Saves a new item to the repository.
     ///
@@ -20,7 +20,7 @@ pub trait ItemRepository {
     /// # Errors
     /// - [CreateItemError::Duplicate] if a item with the same url already exists.
     /// - [CreateItemError::Unkown] for any other errors that may occur during item creation.
-    async fn save(&self, req: &CreateItemRequest) -> Result<Item, CreateItemError>;
+    fn save(&self, req: &CreateItemRequest) -> impl Future<Output = Result<Item, CreateItemError>>;
     /// Finds an item by its ID.
     ///
     /// # Arguments
@@ -32,8 +32,8 @@ pub trait ItemRepository {
     ///
     /// # Errors
     /// - [FindItemByIdError::Unkown] for any other errors that may occur during the search.
-    async fn find_item_by_id(
+    fn find_item_by_id(
         &self,
         req: &FindItemByIdRequest,
-    ) -> Result<Option<Item>, FindItemByIdError>;
+    ) -> impl Future<Output = Result<Option<Item>, FindItemByIdError>>;
 }

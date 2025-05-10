@@ -1,6 +1,4 @@
-use std::sync::Arc;
-
-use async_trait::async_trait;
+use std::{future::Future, sync::Arc};
 
 use crate::domain::{
     CreateUserError, CreateUserRequest, CreateWishlistError, CreateWishlistRequest, User,
@@ -10,13 +8,15 @@ use crate::domain::{
 pub mod user;
 pub mod wishlist;
 
-#[async_trait(?Send)]
 pub trait UseCases: Clone + Send + Sync + 'static {
-    async fn create_user(&self, req: &CreateUserRequest) -> Result<User, CreateUserError>;
-    async fn create_wishlist(
+    fn create_user(
+        &self,
+        req: &CreateUserRequest,
+    ) -> impl Future<Output = Result<User, CreateUserError>>;
+    fn create_wishlist(
         &self,
         req: &CreateWishlistRequest,
-    ) -> Result<Wishlist, CreateWishlistError>;
+    ) -> impl Future<Output = Result<Wishlist, CreateWishlistError>>;
 }
 
 pub struct Service<U, W>
@@ -54,7 +54,6 @@ where
     }
 }
 
-#[async_trait(?Send)]
 impl<U, W> UseCases for Service<U, W>
 where
     U: UserService,

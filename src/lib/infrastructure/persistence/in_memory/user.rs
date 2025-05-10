@@ -4,7 +4,6 @@ use crate::domain::{
     CreateUserError, CreateUserRequest, FindUserByEmailError, FindUserByEmailRequest,
     FindUserByIdError, FindUserByIdRequest, User, UserRepository,
 };
-use async_trait::async_trait;
 use uuid::Uuid;
 
 /// The [InMemoryUserRepository] struct is an in-memory implementation of the [UserRepository]
@@ -22,7 +21,6 @@ impl InMemoryUserRepository {
     }
 }
 
-#[async_trait]
 impl UserRepository for InMemoryUserRepository {
     async fn save(&self, req: &CreateUserRequest) -> Result<User, CreateUserError> {
         let mut users = self.users.lock().unwrap();
