@@ -27,7 +27,7 @@ pub trait WishlistService: Send + Sync + 'static {
     fn create_wishlist(
         &self,
         req: &CreateWishlistRequest,
-    ) -> impl Future<Output = Result<Wishlist, CreateWishlistError>>;
+    ) -> impl Future<Output = Result<Wishlist, CreateWishlistError>> + Send;
 }
 
 pub struct CreateWishlistRequest {

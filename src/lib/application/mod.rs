@@ -12,7 +12,7 @@ pub trait UseCases: Clone + Send + Sync + 'static {
     fn create_user(
         &self,
         req: &CreateUserRequest,
-    ) -> impl Future<Output = Result<User, CreateUserError>>;
+    ) -> impl Future<Output = Result<User, CreateUserError>> + Send;
     fn create_wishlist(
         &self,
         req: &CreateWishlistRequest,
@@ -60,7 +60,8 @@ where
     W: WishlistService,
 {
     async fn create_user(&self, req: &CreateUserRequest) -> Result<User, CreateUserError> {
-        self.user_service.create_user(req).await
+        let result = self.user_service.create_user(req).await;
+        result
     }
 
     async fn create_wishlist(

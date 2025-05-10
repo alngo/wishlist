@@ -20,7 +20,10 @@ pub trait ItemRepository {
     /// # Errors
     /// - [CreateItemError::Duplicate] if a item with the same url already exists.
     /// - [CreateItemError::Unkown] for any other errors that may occur during item creation.
-    fn save(&self, req: &CreateItemRequest) -> impl Future<Output = Result<Item, CreateItemError>>;
+    fn save(
+        &self,
+        req: &CreateItemRequest,
+    ) -> impl Future<Output = Result<Item, CreateItemError>> + Send;
     /// Finds an item by its ID.
     ///
     /// # Arguments
@@ -35,5 +38,5 @@ pub trait ItemRepository {
     fn find_item_by_id(
         &self,
         req: &FindItemByIdRequest,
-    ) -> impl Future<Output = Result<Option<Item>, FindItemByIdError>>;
+    ) -> impl Future<Output = Result<Option<Item>, FindItemByIdError>> + Send;
 }

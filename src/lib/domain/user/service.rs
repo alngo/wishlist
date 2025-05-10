@@ -26,7 +26,7 @@ pub trait UserService: Send + Sync + 'static {
     fn create_user(
         &self,
         req: &CreateUserRequest,
-    ) -> impl Future<Output = Result<User, CreateUserError>>;
+    ) -> impl Future<Output = Result<User, CreateUserError>> + Send;
 }
 
 /// The [CreateUserRequest] struct represents a request to create a new [User].

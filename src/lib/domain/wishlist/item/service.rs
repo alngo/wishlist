@@ -26,7 +26,7 @@ pub trait ItemService {
     fn create_item(
         &self,
         req: &CreateItemRequest,
-    ) -> impl Future<Output = Result<Item, CreateItemError>>;
+    ) -> impl Future<Output = Result<Item, CreateItemError>> + Send;
 }
 
 /// The [CreateItemRequest] struct represents a request to create a new [Item].

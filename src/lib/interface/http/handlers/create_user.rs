@@ -4,6 +4,7 @@ associated data structures.
 */
 
 use axum::extract::State;
+use axum::handler::Handler;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use axum::Json;
@@ -195,7 +196,7 @@ pub async fn create_user<UC: UseCases>(
         .create_user(&domain_req)
         .await
         .map_err(ApiError::from)
-        .map(|ref user| ApiSuccess::new(StatusCode::CREATED, user.into()))
+        .map(|ref user: User| ApiSuccess::new(StatusCode::CREATED, user.into()))
 }
 
 #[cfg(test)]

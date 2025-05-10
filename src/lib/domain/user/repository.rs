@@ -23,7 +23,10 @@ pub trait UserRepository {
     /// # Errors
     /// - [CreateUserError::Duplicate] if a user with the same email already exists.
     /// - [CreateUserError::Unkown] for any other errors that may occur during user creation.
-    fn save(&self, req: &CreateUserRequest) -> impl Future<Output = Result<User, CreateUserError>>;
+    fn save(
+        &self,
+        req: &CreateUserRequest,
+    ) -> impl Future<Output = Result<User, CreateUserError>> + Send;
     /// Finds a user by their email address.
     ///
     /// # Arguments
@@ -38,7 +41,7 @@ pub trait UserRepository {
     fn find_user_by_email(
         &self,
         req: &FindUserByEmailRequest,
-    ) -> impl Future<Output = Result<Option<User>, FindUserByEmailError>>;
+    ) -> impl Future<Output = Result<Option<User>, FindUserByEmailError>> + Send;
     /// Finds a user by their ID.
     ///
     /// # Arguments
@@ -53,5 +56,5 @@ pub trait UserRepository {
     fn find_user_by_id(
         &self,
         id: &FindUserByIdRequest,
-    ) -> impl Future<Output = Result<Option<User>, FindUserByIdError>>;
+    ) -> impl Future<Output = Result<Option<User>, FindUserByIdError>> + Send;
 }

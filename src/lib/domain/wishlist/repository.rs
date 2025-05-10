@@ -23,5 +23,5 @@ pub trait WishlistRepository {
     fn save(
         &self,
         req: &CreateWishlistRequest,
-    ) -> impl Future<Output = Result<Wishlist, CreateWishlistError>>;
+    ) -> impl Future<Output = Result<Wishlist, CreateWishlistError>> + Send;
 }
