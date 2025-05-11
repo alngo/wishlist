@@ -5,7 +5,7 @@ associated data structures.
 
 use axum::http::StatusCode;
 use axum::{extract::State, Json};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -61,7 +61,7 @@ impl From<&Wishlist> for CreateWishlistResponseData {
 }
 
 /// The body of an [Wishlist] creation request.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct CreateWishlistHttpRequestBody {
     pub name: String,
     pub owner_id: String,
@@ -121,7 +121,7 @@ mod tests {
     use super::*;
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_create_wishlist() {
+    async fn test_create_wishlist_success() {
         let id = Uuid::now_v7();
         let name = WishlistName::from("Test wishlist");
         let private = true;
@@ -157,7 +157,7 @@ mod tests {
         let actual = create_wishlist(state, body).await;
         assert!(
             actual.is_ok(),
-            "expected create_author to succeed, but got {:?}",
+            "expected create_wishlist to succeed, but got {:?}",
             actual
         );
 

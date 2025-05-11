@@ -31,6 +31,7 @@ pub trait WishlistService: Send + Sync + 'static {
 }
 
 /// The [CreateWishlistRequest] struct represents a request to create a new [Wishlist].
+#[derive(Debug, Clone)]
 pub struct CreateWishlistRequest {
     owner_id: Uuid,
     name: WishlistName,
@@ -68,7 +69,7 @@ pub enum CreateWishlistError {
 }
 
 #[derive(Clone, Debug, Error)]
-#[error("Name is invalid")]
+#[error("Owner ID is invalid")]
 pub struct OwnerIdInvalidError {
     pub invalid_owner_id: Uuid,
 }

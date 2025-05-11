@@ -12,6 +12,7 @@ pub use slug::WishlistSlug;
 use std::collections::HashSet;
 use uuid::Uuid;
 
+#[derive(Debug, Clone)]
 pub struct Wishlist {
     id: Uuid,
     owner_id: Uuid,
@@ -41,6 +42,26 @@ impl Wishlist {
 
     pub fn id(&self) -> Uuid {
         self.id
+    }
+
+    pub fn owner_id(&self) -> Uuid {
+        self.owner_id
+    }
+
+    pub fn name(&self) -> &WishlistName {
+        &self.name
+    }
+
+    pub fn slug(&self) -> &WishlistSlug {
+        &self.slug
+    }
+
+    pub fn private(&self) -> bool {
+        self.private
+    }
+
+    pub fn items(&self) -> &HashSet<Uuid> {
+        &self.items
     }
 }
 

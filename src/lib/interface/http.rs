@@ -3,11 +3,8 @@ mod responses;
 
 use crate::application::UseCases;
 use anyhow::Context;
-use axum::{
-    handler::Handler,
-    routing::{get, post},
-};
-use handlers::{api_routes, create_user::create_user};
+use axum::routing::get;
+use handlers::api_routes;
 use std::sync::Arc;
 use tokio::net;
 
