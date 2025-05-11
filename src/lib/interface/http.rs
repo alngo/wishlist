@@ -48,7 +48,7 @@ impl HttpServer {
         let router = axum::Router::new()
             .layer(trace_layer)
             .route("/health_check", get(|| async { "OK" }))
-            .nest("api", api_routes())
+            .nest("/api", api_routes())
             .with_state(app_state);
 
         let listener = net::TcpListener::bind((config.host.as_str(), config.port))

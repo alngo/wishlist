@@ -59,7 +59,7 @@ where
                 return Err(CreateWishlistError::OwnerIdDoesNotExist { id: req.owner_id() });
             }
             Err(err) => {
-                return Err(CreateWishlistError::Unkown(err.into()));
+                return Err(CreateWishlistError::Unknown(err.into()));
             }
         }
     }

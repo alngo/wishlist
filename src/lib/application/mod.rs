@@ -16,7 +16,7 @@ pub trait UseCases: Clone + Send + Sync + 'static {
     fn create_wishlist(
         &self,
         req: &CreateWishlistRequest,
-    ) -> impl Future<Output = Result<Wishlist, CreateWishlistError>>;
+    ) -> impl Future<Output = Result<Wishlist, CreateWishlistError>> + Send;
 }
 
 pub struct Service<U, W>
@@ -68,6 +68,7 @@ where
         &self,
         req: &CreateWishlistRequest,
     ) -> Result<Wishlist, CreateWishlistError> {
-        self.wish_service.create_wishlist(req).await
+        let result = self.wish_service.create_wishlist(req).await;
+        result
     }
 }

@@ -22,7 +22,7 @@ pub trait WishlistService: Send + Sync + 'static {
     ///
     /// # Errors
     /// - [CreateWishlistError::OwnerIdDoesNotExist] if the owner ID does not exist.
-    /// - [CreateWishlistError::Unkown] for any other errors that may occur during wishlist
+    /// - [CreateWishlistError::Unknown] for any other errors that may occur during wishlist
     /// creation.
     fn create_wishlist(
         &self,
@@ -30,6 +30,7 @@ pub trait WishlistService: Send + Sync + 'static {
     ) -> impl Future<Output = Result<Wishlist, CreateWishlistError>> + Send;
 }
 
+/// The [CreateWishlistRequest] struct represents a request to create a new [Wishlist].
 pub struct CreateWishlistRequest {
     owner_id: Uuid,
     name: WishlistName,
@@ -63,5 +64,11 @@ pub enum CreateWishlistError {
     #[error("Owner with id {id} does not exist")]
     OwnerIdDoesNotExist { id: Uuid },
     #[error(transparent)]
-    Unkown(#[from] anyhow::Error),
+    Unknown(#[from] anyhow::Error),
+}
+
+#[derive(Clone, Debug, Error)]
+#[error("Name is invalid")]
+pub struct OwnerIdInvalidError {
+    pub invalid_owner_id: Uuid,
 }

@@ -5,7 +5,7 @@ mod service;
 mod slug;
 
 pub use item::*;
-pub use name::WishlistName;
+pub use name::*;
 pub use repository::*;
 pub use service::*;
 pub use slug::WishlistSlug;
@@ -37,6 +37,10 @@ impl Wishlist {
             private,
             items: HashSet::new(),
         }
+    }
+
+    pub fn id(&self) -> Uuid {
+        self.id
     }
 }
 

@@ -22,7 +22,7 @@ pub trait UserService: Send + Sync + 'static {
     ///
     /// # Errors
     /// - [CreateUserError::Duplicate] if a user with the same email already exists.
-    /// - [CreateUserError::Unkown] for any other errors that may occur during user creation.
+    /// - [CreateUserError::Unknown] for any other errors that may occur during user creation.
     fn create_user(
         &self,
         req: &CreateUserRequest,
